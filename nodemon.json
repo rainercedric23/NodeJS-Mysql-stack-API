@@ -1,0 +1,6 @@
+{
+    "watch": ["api", "schema", "src", "index.ts"],
+    "ignore": ["src/**/*.spec.ts"],
+    "exec": "npm run lint && node_modules/typescript/bin/tsc && ts-node src/index.ts",
+    "ext": "js, yaml, ts"
+}

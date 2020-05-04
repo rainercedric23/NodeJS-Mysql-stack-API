@@ -1,0 +1,65 @@
+version: '2'
+
+networks:
+  backend:
+    driver: ${ENV_NETWORK_DRIVER}
+
+services:
+  workspace:
+    image: busybox:latest
+    volumes:
+      - ${APPLICATION}:/var/www
+      - ./mount/mysql:/var/lib/mysql:rw
+
+  node:
+    build:
+      context: ./docker/services/node
+    volumes:
+      - ${ENV_APP_DIR_HOST}:${ENV_APP_DIR_CONTAINER}
+    env_file: ./.env
+    ports:
+      - "${ENV_HOST_PORT}:${ENV_NODE_PORT}"
+    volumes_from:
+      - workspace
+    networks:
+      - network
+    depends_on:
+      # - mongo
+      - mysql
+    links:
+      # - mongo
+      - mysql
+    networks:
+      vpcbr:
+        ipv4_address: 11.5.0.7
+
+  mysql:
+    build:
+      context: ./docker/services/mysql
+      args:
+        - MYSQL_VERSION=${MYSQL_VERSION}
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes_from:
+      - workspace
+    networks:
+      vpcbr:
+        ipv4_address: 11.5.0.6
+
+volumes:
+  mysql:
+    driver: local
+  node:
+
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 11.5.0.0/16
+         gateway: 11.5.0.1

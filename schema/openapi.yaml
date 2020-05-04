@@ -1,0 +1,453 @@
+openapi: 3.0.0
+info:
+  description: API for Cronus
+  license:
+    name: Apache-2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Cronus API
+  version: 1.0.0
+servers:
+- description: Server
+  url: http://{env}:{port}/v1/
+  variables:
+    env:
+      default: localhost
+      enum:
+      - localhost
+      - dev
+      - stg
+      - prd
+    port:
+      default: "8080"
+tags:
+- name: User
+  description: Operations about user and its management
+- name: Service
+  description: Services to be rendered to the client
+- name: Client
+  description: Clients that the company is offering services to
+- name: Time Sheet
+  description: Time sheet of a specific user by Service
+- name: Service
+  description: Service rendered by the business to specific clients
+- name: Category
+  description: Type of services that will be rendered
+- name: Team Members
+  description: Group of users whose working on specific service
+
+paths:
+  /user:
+    get:
+      description: Returns the User Details
+      operationId: getUserDetails
+      summary: Get User Details
+      tags:
+      - User
+      x-openapi-router-controller: UserController
+      x-openapi-router-service: UserService
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: integer
+      - in: query
+        name: email
+        schema:
+          type: string
+      - in: query
+        name: role
+        schema:
+          type: string
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/User"
+          description: Sucessfully get Player details base on ID
+        500:
+          content: {}
+          description: Internal Server Error
+    put:
+      description: Create User
+      operationId: createUser
+      summary: Create User with initial Role
+      tags:
+      - User
+      requestBody:
+        description: Callback payload
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              email: "sample@codingchiefs.com"
+              password: "pass123$$"
+              firstname: "Foo"
+              lastname: "Bar"
+              status: 1
+              role: "user"
+      responses:
+        200:
+          content: {}
+          description: user successfully created
+        500:
+          content: {}
+          description: Internal Server Error
+      x-openapi-router-controller: UserController
+      x-openapi-router-service: UserService
+    post:
+      description: update User
+      operationId: updateUser
+      summary: Update User
+      tags:
+      - User
+      requestBody:
+        description: Callback payload
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              firstname: "Foo1"
+              lastname: "Bar1"
+              status: 1
+              role: "user"
+              id: 89
+      responses:
+        200:
+          content: {}
+          description: user successfully updated
+        500:
+          content: {}
+          description: Internal Server Error
+      x-openapi-router-controller: UserController
+      x-openapi-router-service: UserService
+  /user/login:
+    post:
+      description: Login User
+      operationId: loginUser
+      summary: Logins the user base on Email and Password
+      tags:
+      - User
+      requestBody:
+        description: Callback payload
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              email: "admin5@codingchiefs.com"
+              password: "pass123$$"
+      responses:
+        200:
+          content: {}
+          description: user successfully Login
+        403:
+          content: {}
+          description: Unauthorized
+      x-openapi-router-controller: AuthController
+      x-openapi-router-service: AuthService
+  /user/reset:
+    post:
+      description: Request token
+      operationId: resetToken
+      summary: Request token base on Email to change password
+      tags:
+      - User
+      requestBody:
+        description: Callback payload
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              email: "admin@codingchiefs.com"
+      responses:
+        200:
+          content: {}
+          description: user successfully get token to reset password
+        403:
+          content: {}
+          description: Unauthorized
+      x-openapi-router-controller: UserController
+      x-openapi-router-service: UserService
+    put:
+      description: Reset Password
+      operationId: resetPassword
+      summary: Reset Password base on token to change password
+      tags:
+      - User
+      requestBody:
+        description: Callback payload
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              token: "admin@codingchiefs.com"
+              password: "test"
+      responses:
+        200:
+          content: {}
+          description: user successfully reset password
+        403:
+          content: {}
+          description: Unauthorized
+      x-openapi-router-controller: UserController
+      x-openapi-router-service: UserService
+  /user/token:
+    post:
+      description: Verify Token
+      operationId: verifyToken
+      summary: Verify Token Validity
+      tags:
+      - User
+      requestBody:
+        description: Callback payload
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              token: "some valid token from login"
+      responses:
+        200:
+          content: {}
+          description: successfully verified the token
+        403:
+          content: {}
+          description: Unauthorized
+      x-openapi-router-controller: AuthController
+      x-openapi-router-service: AuthService
+  /service:
+    get:
+      description: Returns the Service Details
+      operationId: getService
+      summary: Get Service Details
+      tags:
+      - Service
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: integer
+      - in: query
+        name: clientId
+        schema:
+          type: string
+      - in: query
+        name: categoryId
+        schema:
+          type: string
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/Service"
+          description: Sucessfully get Service details base on ID
+        500:
+          content: {}
+          description: Internal Server Error
+      x-openapi-router-controller: ServiceController
+      x-openapi-router-service: ServiceService
+    put:
+      description: Create Service
+      operationId: createService
+      summary: Create Service
+      tags:
+      - Service
+      requestBody:
+        description: Callback payload
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Service'
+            example:
+              email: "sample@codingchiefs.com"
+              password: "pass123$$"
+              firstname: "Foo"
+              lastname: "Bar"
+              status: 1
+              role: "user"
+      responses:
+        200:
+          content: {}
+          description: Service successfully created
+        500:
+          content: {}
+          description: Internal Server Error
+      x-openapi-router-controller: ServiceController
+      x-openapi-router-service: ServiceService
+    post:
+      description: update Service
+      operationId: updateService
+      summary: Update Service
+      tags:
+      - Service
+      requestBody:
+        description: Callback payload
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Service'
+            example:
+              firstname: "Foo1"
+              lastname: "Bar1"
+              status: 1
+              role: "user"
+              id: 89
+      responses:
+        200:
+          content: {}
+          description: Service successfully updated
+        500:
+          content: {}
+          description: Internal Server Error
+      x-openapi-router-controller: ServiceController
+      x-openapi-router-service: ServiceService
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        first_name:
+          type: string
+        last_name:
+          type: string
+        address:
+          type: string
+        postal_code:
+          type: integer
+        city:
+          type: string
+        phone:
+          type: integer
+        status:
+          type: integer
+        created:
+          type: string
+          format: date-time
+        modified:
+          type: string
+          format: date-time
+        role:
+          type: string
+      xml:
+        name: User
+    Service:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+        recurring_type:
+          type: string
+        hours:
+          type: integer
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        created:
+          type: string
+          format: date-time
+        modified:
+          type: string
+          format: date-time
+        client_id:
+          type: integer
+        recurring:
+          type: integer
+        category_id:
+          type: integer
+        rate:
+          type: integer
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        created:
+          type: string
+          format: date-time
+        modified:
+          type: string
+          format: date-time
+    Client:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        created:
+          type: string
+          format: date-time
+        modified:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        user_id:
+          type: integer
+    Timesheet:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        client_id:
+          type: integer
+        service_id:
+          type: integer
+        description:
+          type: string
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        created:
+          type: string
+          format: date-time
+        modified:
+          type: string
+          format: date-time
+        type:
+          type: string
+    Team Members:
+      type: object
+      properties:
+        id:
+          type: integer
+        service_id:
+          type: integer
+        user_id:
+          type: integer
+        status:
+          type: integer
+        created:
+          type: string
+          format: date-time
+        modified:
+          type: string
+          format: date-time
