@@ -1,5 +1,7 @@
 # Timesheet API (Unfinished Project)
 
+NodeJS and MySQL stack
+
 ## Overview
 Timesheet API server was generated using the [OpenAPI Generator](https://openapi-generator.tech) project.
 
