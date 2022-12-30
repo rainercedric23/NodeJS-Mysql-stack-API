@@ -61,7 +61,7 @@
     "@types/express": "^4.17.1",
     "@types/mocha": "^5.2.7",
     "debug": "~2.6.9",
-    "mocha": "^6.2.1",
+    "mocha": "^10.2.0",
     "nock": "^11.4.0",
     "nodemon": "^1.19.2",
     "ts-mocha": "^6.0.0",
